@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -34,6 +33,8 @@ import com.github.pires.obd.exceptions.NoDataException;
 import com.github.pires.obd.exceptions.UnableToConnectException;
 import com.github.pires.obd.reader.R;
 import com.github.pires.obd.reader.io.BluetoothManager;
+import com.github.pires.obd.reader.io.ObdDeviceManager;
+import com.github.pires.obd.reader.io.ObdSocket;
 import com.google.inject.Inject;
 
 import java.io.IOException;
@@ -62,8 +63,7 @@ public class TroubleCodesActivity extends Activity {
     private ProgressDialog progressDialog;
     private String remoteDevice;
     private GetTroubleCodesTask gtct;
-    private BluetoothDevice dev = null;
-    private BluetoothSocket sock = null;
+    private ObdSocket sock = null;
     private Handler mHandler = new Handler(new Handler.Callback() {
 
 
@@ -128,14 +128,8 @@ public class TroubleCodesActivity extends Activity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
 
-        remoteDevice = prefs.getString(ConfigActivity.BLUETOOTH_LIST_KEY, null);
-        if (remoteDevice == null || "".equals(remoteDevice)) {
-            Log.e(TAG, "No Bluetooth device has been selected.");
-            mHandler.obtainMessage(NO_BLUETOOTH_DEVICE_SELECTED).sendToTarget();
-        } else {
-            gtct = new GetTroubleCodesTask();
-            gtct.execute(remoteDevice);
-        }
+        gtct = new GetTroubleCodesTask();
+        gtct.execute(remoteDevice);
     }
 
     @Override
@@ -152,7 +146,7 @@ public class TroubleCodesActivity extends Activity {
         switch (item.getItemId()) {
             case R.id.action_clear_codes:
                 try {
-                    sock = BluetoothManager.connect(dev);
+                    sock = ObdDeviceManager.connect(TroubleCodesActivity.this);
                 } catch (Exception e) {
                     Log.e(
                             TAG,
@@ -277,20 +271,12 @@ public class TroubleCodesActivity extends Activity {
 
             //Get the current thread's token
             synchronized (this) {
-                Log.d(TAG, "Starting service..");
-                // get the remote Bluetooth device
-
-                final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
-                dev = btAdapter.getRemoteDevice(params[0]);
-
-                Log.d(TAG, "Stopping Bluetooth discovery.");
-                btAdapter.cancelDiscovery();
 
                 Log.d(TAG, "Starting OBD connection..");
 
                 // Instantiate a BluetoothSocket for the remote device and connect it.
                 try {
-                    sock = BluetoothManager.connect(dev);
+                    sock = ObdDeviceManager.connect(TroubleCodesActivity.this);
                 } catch (Exception e) {
                     Log.e(
                             TAG,
@@ -369,7 +355,7 @@ public class TroubleCodesActivity extends Activity {
             return result;
         }
 
-        public void closeSocket(BluetoothSocket sock) {
+        public void closeSocket(ObdSocket sock) {
             if (sock != null)
                 // close socket
                 try {
