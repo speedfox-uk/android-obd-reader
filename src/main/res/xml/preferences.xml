@@ -36,6 +36,11 @@
             android:key="bluetooth_list_preference"
             android:summary="@string/pref_bluetooth_list_devices_summary"
             android:title="@string/pref_bluetooth_list_devices_title" />
+        <ListPreference
+            android:dialogTitle="@string/pref_usb_list_devices_title"
+            android:key="usb_list_preference"
+            android:summary="@string/pref_usb_list_devices_summary"
+            android:title="@string/pref_usb_list_devices_title" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="@string/pref_gps_category"

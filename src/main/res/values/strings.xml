@@ -106,4 +106,12 @@
     <string name="pref_dev_email_title">Developer Email</string>
     <string name="pref_dev_email_summary">Logs will be emailed to this address</string>
     <string name="text_noerrors">There were no errors found.!</string>
+
+    <string name="pref_usb_title">Use USB interface</string>
+    <string name="pref_usb_summaryOff">Use a USB OBD Cable</string>
+    <string name="pref_usb_summaryOn">Use a Bluetooth OBD interface</string>
+    <string name="pref_usb_list_devices_summary">List of Usb devices.</string>
+    <string name="pref_usb_list_devices_title">Usb Devices</string>
+
+
 </resources>
